@@ -1,12 +1,12 @@
-accelerate==0.33.0
-aiofiles==23.2.1
+accelerate
+aiofiles
 altair==4.2.2
 dadaptation==3.2
 diffusers[torch]==0.32.2
 einops==0.7.0
 fairscale==0.4.13
 ftfy==6.1.1
-gradio>=5.23.1
+gradio
 huggingface-hub==0.29.3
 imagesize==1.4.1
 invisible-watermark==0.2.0
@@ -17,7 +17,7 @@ onnx==1.16.1
 prodigyopt==1.1.2
 protobuf==3.20.3
 open-clip-torch==2.20.0
-opencv-python==4.10.0.84
+opencv-python
 prodigy-plus-schedule-free==1.8.0
 pytorch-lightning==1.9.0
 pytorch-optimizer==3.5.0
