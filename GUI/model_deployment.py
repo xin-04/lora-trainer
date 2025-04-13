@@ -147,7 +147,7 @@ def model_deployment_tab():
             batch_size = gr.Slider(1, 8, value=1, step=1, label="Batch Size")
 
         generate_btn = gr.Button("Generate")
-        output_gallery = gr.Gallery(label="Generated Images").style(grid=[2], height="auto")
+        output_gallery = gr.Gallery(label="Generated Images")
 
         browse_lora_btn.click(fn=load_lora, inputs=[], outputs=lora_path)
         generate_btn.click(
