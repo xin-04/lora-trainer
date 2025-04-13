@@ -368,12 +368,13 @@ def lora_training_tab():
             save_btn = gr.Button("💾 Save Config")
             load_btn = gr.Button("📂 Load Config")
 
-        gr.Markdown('## ⌛ Time to Train!')
-        with gr.Row():
-                config_path = gr.Textbox(label="Config Path", placeholder="Path to config", scale=4)
-                browse_config_btn = gr.Button("📁", variant="secondary", scale=1)
-        
-        train_btn = gr.Button("Start Training")
+        with gr.Group():
+            gr.Markdown('## ⌛ Time to Train!')
+            with gr.Row():
+                    config_path = gr.Textbox(label="Config Path", placeholder="Path to config", scale=4)
+                    browse_config_btn = gr.Button("📁", variant="secondary", scale=1)
+            
+            train_btn = gr.Button("Start Training")
 
         gr.Markdown("## 📄 Your Status")
         status_output = gr.Textbox(label="Status", placeholder="Waiting for user action...")

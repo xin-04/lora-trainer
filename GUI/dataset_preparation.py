@@ -341,35 +341,38 @@ def dataset_preparation_tab():
     # Tab layout for "Dataset Preparation"
     with gr.Tab("Dataset Preparation"):
 
-        gr.Markdown("### ⬆️ Upload Pre-edited Image")
-        with gr.Row():
-            file_upload = gr.File(label="Upload Image", file_types=[".png", ".jpg", ".jpeg", ".webp"])
-            upload_status = gr.Textbox(label="Upload Status")
+        with gr.Group():
+            gr.Markdown("### ⬆️ Upload Pre-edited Image")
+            with gr.Row():
+                file_upload = gr.File(label="Upload Image", file_types=[".png", ".jpg", ".jpeg", ".webp"])
+                upload_status = gr.Textbox(label="Upload Status")
         
-        gr.Markdown("### 👇 Select Image To Crop / Resize")
-        with gr.Row():
-            preedit_img_path = gr.Textbox(label="Select Image Path", placeholder="Path to pre-edited image", scale=4)
-            browse_preedit_img_btn = gr.Button("📁", variant="secondary", scale=1)
-        
-        gr.Markdown("### ✂️ Image Cropping Tool")
-        with gr.Row():
-            free_crop_btn = gr.Button("Crop Image Freely")            
-            crop_btn = gr.Button("Crop Image with Aspect")
+        with gr.Group():
+            gr.Markdown("### 👇 Select Image To Crop / Resize")
+            with gr.Row():
+                preedit_img_path = gr.Textbox(label="Select Image Path", placeholder="Path to pre-edited image", scale=4)
+                browse_preedit_img_btn = gr.Button("📁", variant="secondary", scale=1)
+            
+            gr.Markdown("### ✂️ Image Cropping Tool")
+            with gr.Row():
+                free_crop_btn = gr.Button("Crop Image Freely")            
+                crop_btn = gr.Button("Crop Image with Aspect")
 
-        gr.Markdown("### 🪟 Image Resizing Tool")  
-        with gr.Row():
-            width = gr.Number(label="Enter Width:")
-            height = gr.Number(label="Enter Height:")
-            resize_image_btn = gr.Button("Resize", variant="secondary")
-        with gr.Row():
-            ratio = gr.Number(label="Enter Ratio")
-            resize_image_ratio_btn = gr.Button("Resize while keeping aspect", variant="secondary")
+            gr.Markdown("### 🪟 Image Resizing Tool")  
+            with gr.Row():
+                width = gr.Number(label="Enter Width:")
+                height = gr.Number(label="Enter Height:")
+                resize_image_btn = gr.Button("Resize", variant="secondary")
+            with gr.Row():
+                ratio = gr.Number(label="Enter Ratio")
+                resize_image_ratio_btn = gr.Button("Resize while keeping aspect", variant="secondary")
 
-        gr.Markdown("### 📄 Auto-captioning Tool")
-        with gr.Row():
-            dataset_dir = gr.Textbox(label="Select Dataset Directory", placeholder="Path to dataset", scale=4)
-            dataset_dir_btn = gr.Button("📁", variant="secondary", scale=1)
-        caption_btn = gr.Button("Auto-captioning")
+        with gr.Group():
+            gr.Markdown("### 📄 Auto-captioning Tool")
+            with gr.Row():
+                dataset_dir = gr.Textbox(label="Select Dataset Directory", placeholder="Path to dataset", scale=4)
+                dataset_dir_btn = gr.Button("📁", variant="secondary", scale=1)
+            caption_btn = gr.Button("Auto-captioning")
 
         gr.Markdown("### ⌛ Your Current Status") 
         output_text = gr.Textbox(label="Output Status")
