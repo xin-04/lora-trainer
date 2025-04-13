@@ -136,7 +136,7 @@ def crop_image(image_path):
         popup.resizable(False, False)
 
         tk.Label(popup, text="Choose crop size:").pack(pady=5)
-        options = ["512x512", "512x768", "768x512", "768x768"]
+        options = ["512x512"]
         selected_size.set(options[0])
 
         combo = ttk.Combobox(popup, values=options, textvariable=selected_size, state="readonly")
