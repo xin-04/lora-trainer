@@ -29,9 +29,9 @@ Please make sure the following are installed before setup:
    git clone https://github.com/xin-04/lora-trainer
 
 2. Run the setup scripts in order:
-   i. run step1_setup_venv.bat
-   ii. run step2_download_models.bat
-   iii. run afterinstall_run_gui.bat
+   - run step1_setup_venv.bat
+   - run step2_download_models.bat
+   - run afterinstall_run_gui.bat
 
 ## 🥊Main features
 
