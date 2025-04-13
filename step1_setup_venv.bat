@@ -18,7 +18,6 @@ python -m pip install --require-virtualenv --no-input -q -q  setuptools
 
 :: Install required modules
 pip install -r requirements.txt
-pip install -r requirements_windows.txt
 
 :: Deactivate the virtual environment
 call .\venv\Scripts\deactivate.bat
