@@ -1,0 +1,12 @@
+[general]
+caption_extension = '.txt'
+keep_tokens = 1
+
+[[datasets]]
+resolution = 768
+batch_size = 1
+enable_bucket = true
+    [[datasets.subsets]]
+    image_dir = 'C:\lora-trainer\dataset\img'
+    class_tokens = ''
+    num_repeats = 10
