@@ -1,0 +1,74 @@
+[settings]
+use_shell = false
+
+[model]
+pretrained_model_name_or_path = "C:/lora-trainer/models/unet/v1-5-pruned.safetensors"
+output_name = "lora"
+train_data_dir = "C:/lora-trainer/dataset/images"
+dataset_config = "dataset.toml"
+training_comment = "Some training comment"
+save_model_as = "safetensors"
+network_module = "networks.lora"
+
+[folders]
+output_dir = "C:/lora-trainer/models/lora"
+logging_dir = "./logs"
+reg_data_dir = "./data/reg"
+
+[configuration]
+config_dir = "./lora_presets"
+
+[accelerate_launch]
+mixed_precision = "bf16"
+
+[basic]
+cache_latents = true
+cache_latents_to_disk = true
+caption_extension = ".txt"
+enable_bucket = true
+learning_rate = 0.0003
+lr_scheduler = "constant_with_warmup"
+lr_scheduler_num_cycles = 1
+lr_scheduler_power = 1
+network_dim = 128
+network_alpha = 64
+max_bucket_reso = 2048
+max_resolution = "768,768"
+max_train_steps = 2000
+max_train_epochs = 8
+min_bucket_reso = 64
+optimizer_type = "adafactor"
+optimizer_args = ["relative_step=False", "scale_parameter=False", "warmup_init=False"]
+use_8bit_adam = false
+use_lion_optimizer = false
+save_every_n_epochs = 25.0
+save_every_n_steps = 200
+save_precision = "float"
+seed = 1
+train_batch_size = 1
+
+[advanced]
+bucket_no_upscale = true
+bucket_reso_steps = 64
+clip_skip = 2
+fp8_base = true
+full_bf16 = true
+full_fp16 = false
+gradient_accumulation_steps = 1
+gradient_checkpointing = true
+highvram = true
+huber_c = 0.1
+huber_schedule = "snr"
+loss_type = "l2"
+max_data_loader_n_workers = 2
+max_timestep = 1000
+max_token_length = 225
+multires_noise_discount = 0.3
+noise_offset = 0.1
+persistent_data_loader_workers = false
+state_dir = "./outputs"
+log_with = "tensorboard"
+xformers = "xformers"
+
+[dataset_preparation]
+images_folder = "C:/lora-trainer/dataset/images"

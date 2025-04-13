@@ -1,0 +1,191 @@
+[settings]
+use_shell = false
+
+[model]
+pretrained_model_name_or_path = "C:/lora-trainer/models/unet/v1-5-pruned.safetensors"
+output_name = "mads"
+train_data_dir = "C:/lora-trainer/dataset/images"
+dataset_config = "dataset.toml"
+training_comment = "Some training comment"
+save_model_as = "safetensors"
+network_module = "networks.lora"
+
+[folders]
+output_dir = "C:/lora-trainer/models/lora"
+logging_dir = "./logs"
+reg_data_dir = "./data/reg"
+
+[configuration]
+config_dir = "./lora_presets"
+
+[accelerate_launch]
+dynamo_backend = "no"
+dynamo_mode = "default"
+dynamo_use_dynamic = false
+dynamo_use_fullgraph = false
+extra_accelerate_launch_args = ""
+gpu_ids = ""
+main_process_port = 0
+mixed_precision = "bf16"
+multi_gpu = false
+num_cpu_threads_per_process = 2
+num_machines = 1
+num_processes = 1
+
+[basic]
+cache_latents = true
+cache_latents_to_disk = true
+caption_extension = ".txt"
+enable_bucket = true
+epoch = 1
+learning_rate = 0.0003
+learning_rate_te = 0.0001
+learning_rate_te1 = 0.0001
+learning_rate_te2 = 0.0001
+lr_scheduler = "constant_with_warmup"
+lr_scheduler_args = ""
+lr_scheduler_type = ""
+lr_warmup = 0
+lr_scheduler_num_cycles = 1
+lr_scheduler_power = 1
+network_dim = 128
+network_alpha = 64
+max_bucket_reso = 2048
+max_grad_norm = 1.0
+max_resolution = "768,768"
+max_train_steps = 2000
+max_train_epochs = 8
+min_bucket_reso = 64
+optimizer_type = "adafactor"
+optimizer_args = ["relative_step=False", "scale_parameter=False", "warmup_init=False"]
+use_8bit_adam = false
+use_lion_optimizer = false
+save_every_n_epochs = 25.0
+save_every_n_steps = 200
+save_precision = "float"
+seed = 1
+stop_text_encoder_training = 0
+train_batch_size = 1
+text_encoder_lr = 0
+unet_lr = 0.0003
+
+[advanced]
+adaptive_noise_scale = 0
+additional_parameters = ""
+bucket_no_upscale = true
+bucket_reso_steps = 64
+caption_dropout_every_n_epochs = 0
+caption_dropout_rate = 0
+color_aug = false
+clip_skip = 2
+debiased_estimation_loss = false
+dim_from_weights = false
+flip_aug = false
+fp8_base = true
+full_bf16 = true
+full_fp16 = false
+gradient_accumulation_steps = 1
+gradient_checkpointing = true
+highvram = true
+huber_c = 0.1
+huber_schedule = "snr"
+ip_noise_gamma = 0
+ip_noise_gamma_random_strength = false
+keep_tokens = 0
+log_tracker_config_dir = "./logs"
+log_tracker_name = ""
+loss_type = "l2"
+masked_loss = false
+max_data_loader_n_workers = 2
+max_timestep = 1000
+max_token_length = 225
+mem_eff_attn = false
+min_snr_gamma = 5
+min_timestep = 0
+multires_noise_iterations = 0
+multires_noise_discount = 0.3
+network_train_unet_only = false
+network_train_text_encoder_only = false
+no_token_padding = false
+noise_offset = 0.1
+noise_offset_random_strength = false
+noise_offset_type = "Original"
+persistent_data_loader_workers = false
+prior_loss_weight = 1
+random_crop = false
+save_every_n_steps = 200
+save_last_n_steps = 0
+save_last_n_steps_state = 0
+save_state = false
+save_state_on_train_end = false
+scale_v_pred_loss_like_noise_pred = false
+shuffle_caption = false
+state_dir = "./outputs"
+log_with = "tensorboard"
+v_pred_like_loss = 0
+wandb_api_key = ""
+wandb_run_name = ""
+weighted_captions = false
+xformers = "xformers"
+
+[dataset_preparation]
+class_prompt = "class"
+images_folder = "C:/lora-trainer/dataset/images"
+instance_prompt = "instance"
+reg_images_folder = "/some/folder/where/reg/images/are"
+reg_images_repeat = 1
+util_regularization_images_repeat_input = 1
+util_training_images_repeat_input = 40
+
+[huggingface]
+async_upload = false
+huggingface_path_in_repo = ""
+huggingface_repo_id = ""
+huggingface_repo_type = ""
+huggingface_repo_visibility = ""
+huggingface_token = ""
+resume_from_huggingface = ""
+save_state_to_huggingface = false
+
+[samples]
+sample_every_n_steps = 10
+sample_every_n_epochs = 0
+sample_prompts = ""
+
+[sdxl]
+disable_mmap_load_safetensors = false
+fused_backward_pass = false
+fused_optimizer_groups = 0
+sdxl_cache_text_encoder_outputs = false
+sdxl_no_half_vae = true
+
+[wd14_caption]
+always_first_tags = ""
+append_tags = false
+batch_size = 8
+caption_extension = ".txt"
+caption_separator = ", "
+character_tag_expand = false
+character_threshold = 0.35
+debug = false
+force_download = false
+frequency_tags = false
+general_threshold = 0.35
+max_data_loader_n_workers = 2
+onnx = true
+recursive = false
+remove_underscore = false
+repo_id = "SmilingWolf/wd-convnext-tagger-v3"
+tag_replacement = ""
+thresh = 0.36
+train_data_dir = ""
+undesired_tags = ""
+use_rating_tags = false
+use_rating_tags_as_last_tag = false
+
+[metadata]
+metadata_title = ""
+metadata_author = ""
+metadata_description = ""
+metadata_license = ""
+metadata_tags = ""
