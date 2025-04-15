@@ -2,7 +2,9 @@ import gradio as gr
 import torch
 import tkinter as tk
 import os
+import uuid
 from tkinter import filedialog
+from PIL import Image
 
 from diffusers import (
     StableDiffusionPipeline,
@@ -14,6 +16,8 @@ from diffusers import (
     LMSDiscreteScheduler,
     HeunDiscreteScheduler,
 )
+
+DEFAULT_OUTPUT_DIR = os.path.join(os.getcwd(), "outputs")
 
 SCHEDULER_MAPPING = {
     "Euler A (euler_a)": EulerAncestralDiscreteScheduler,
@@ -90,7 +94,7 @@ def generate_image(scheduler_name, lora_path, lora_scale, width, height,
     generator = torch.manual_seed(seed)
 
     total = batch_count * batch_size
-    images = []
+    all_images = []
 
     with torch.autocast("cuda"):
         # Simulate step-wise progress (optional)
@@ -107,8 +111,17 @@ def generate_image(scheduler_name, lora_path, lora_scale, width, height,
             generator=generator
         )
         
-        images.extend(output.images)
+        all_images.extend(output.images)
 
-    return images
+    # Save images to disk and return file paths
+    saved_paths = []
+    os.makedirs(DEFAULT_OUTPUT_DIR, exist_ok=True)
+    for img in all_images:
+        filename = f"output_{uuid.uuid4().hex[:8]}.png"
+        path = os.path.join(DEFAULT_OUTPUT_DIR, filename)
+        img.save(path)
+        saved_paths.append(path)
+
+    return saved_paths
 
     
