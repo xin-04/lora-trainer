@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import filedialog, ttk
 from transformers import BlipProcessor, BlipForConditionalGeneration
 
+
 UPLOAD_DIR = r"C:\lora-trainer\dataset\preedited_img"
 
 # Ensure the directory exists
@@ -14,18 +15,6 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # Load the BLIP model and processor
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
-
-def load_dataset_dir():
-    root = tk.Tk()
-    root.withdraw()
-    default_path = os.path.abspath(r"C:\lora-trainer\dataset\img")
-
-    dataset_path = filedialog.askdirectory(
-        initialdir = default_path,
-        title = "Select Dataset Image Directory",
-    )
-
-    return dataset_path or ""
 
 def save_uploaded_image(image):
     if image is None:
@@ -42,6 +31,57 @@ def save_uploaded_image(image):
 
     output_text = "Image saved to: " + save_path
     return output_text
+
+# Automatic captioning function for a single image
+def generate_caption(image_path):
+    # Open and preprocess image
+    raw_image = cv2.imread(image_path)
+    if raw_image is None:
+        output_text = "Error: Could not load image."
+        return output_text
+
+    # Convert image to RGB for the BLIP model
+    image = cv2.cvtColor(raw_image, cv2.COLOR_BGR2RGB)
+    
+    # Process the image and generate caption
+    inputs = processor(images=image, return_tensors="pt")
+    out = model.generate(**inputs)
+    
+    caption = processor.decode(out[0], skip_special_tokens=True)
+    
+    return caption
+
+def generate_captions_for_folder(folder_path):
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+
+        # Check if it's an image file
+        if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+            caption = generate_caption(file_path)
+            
+            # Create a .txt file with the same name as the image
+            base_name, _ = os.path.splitext(filename)
+            caption_file_path = os.path.join(folder_path, base_name + ".txt")
+
+            with open(caption_file_path, 'w', encoding='utf-8') as f:
+                f.write(caption)
+
+            print(f"Caption saved: {caption_file_path}")
+    
+    output_text = "Captions generated and saved for all images."
+    return output_text
+
+def load_dataset_dir():
+    root = tk.Tk()
+    root.withdraw()
+    default_path = os.path.abspath(r"C:\lora-trainer\dataset\img")
+
+    dataset_path = filedialog.askdirectory(
+        initialdir = default_path,
+        title = "Select Dataset Image Directory",
+    )
+
+    return dataset_path or ""
 
 def load_preedit_image():
     default_dir = os.path.abspath(r"C:\lora-trainer\dataset\preedited_img")
@@ -123,11 +163,10 @@ def crop_image(image_path):
         return
 
     def get_crop_size():
-        selected_size = tk.StringVar()
-        crop_result = {"size": None}
+        result = {"value": "512x512"}  # default
 
         def submit():
-            crop_result["size"] = selected_size.get()
+            result["value"] = combo.get()
             popup.quit()
 
         popup = tk.Tk()
@@ -136,20 +175,25 @@ def crop_image(image_path):
         popup.resizable(False, False)
 
         tk.Label(popup, text="Choose crop size:").pack(pady=5)
-        options = ["512x512"]
-        selected_size.set(options[0])
+        options = ["512x512", "512x768", "768x512", "768x768"]
+        selected = tk.StringVar(value=options[0])
 
-        combo = ttk.Combobox(popup, values=options, textvariable=selected_size, state="readonly")
+        combo = ttk.Combobox(popup, values=options, textvariable=selected, state="readonly")
         combo.pack(pady=5)
 
         tk.Button(popup, text="OK", command=submit).pack(pady=5)
+
         popup.mainloop()
         popup.destroy()
 
-        return crop_result["size"]
+        return result["value"]
 
-    crop_size = get_crop_size()
-    crop_w, crop_h = map(int, crop_size.split("x"))
+    crop_size_str = get_crop_size()
+    crop_w, crop_h = map(int, crop_size_str.split("x"))
+
+    if img.shape[1] < crop_w or img.shape[0] < crop_h:
+        print(f"Image is smaller than the selected crop size {crop_w}x{crop_h}.")
+        return
 
     clone = img.copy()
     window_name = "Click to center crop box (Press Enter to save)"
@@ -160,14 +204,24 @@ def crop_image(image_path):
 
     def select_crop(event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
-            x1 = max(0, x - crop_w // 2)
-            y1 = max(0, y - crop_h // 2)
-            x2 = min(img.shape[1], x1 + crop_w)
-            y2 = min(img.shape[0], y1 + crop_h)
+            x1 = x - crop_w // 2
+            y1 = y - crop_h // 2
+            x2 = x1 + crop_w
+            y2 = y1 + crop_h
 
-            # Adjust if crop area exceeds image
-            x1 = max(0, x2 - crop_w)
-            y1 = max(0, y2 - crop_h)
+            # Ensure crop stays within image bounds
+            if x1 < 0:
+                x1 = 0
+                x2 = crop_w
+            if y1 < 0:
+                y1 = 0
+                y2 = crop_h
+            if x2 > img.shape[1]:
+                x2 = img.shape[1]
+                x1 = x2 - crop_w
+            if y2 > img.shape[0]:
+                y2 = img.shape[0]
+                y1 = y2 - crop_h
 
             crop_coords.clear()
             crop_coords.extend([x1, y1, x2, y2])
@@ -297,91 +351,4 @@ def resize_image_by_ratio(image_path, scale_ratio):
         output_text = "Error: Failed to save resized image."
 
     return output_text
-
-# Automatic captioning function for a single image
-def generate_caption(image_path):
-    # Open and preprocess image
-    raw_image = cv2.imread(image_path)
-    if raw_image is None:
-        output_text = "Error: Could not load image."
-        return output_text
-
-    # Convert image to RGB for the BLIP model
-    image = cv2.cvtColor(raw_image, cv2.COLOR_BGR2RGB)
-    
-    # Process the image and generate caption
-    inputs = processor(images=image, return_tensors="pt")
-    out = model.generate(**inputs)
-    
-    caption = processor.decode(out[0], skip_special_tokens=True)
-    
-    return caption
-
-def generate_captions_for_folder(folder_path):
-    for filename in os.listdir(folder_path):
-        file_path = os.path.join(folder_path, filename)
-
-        # Check if it's an image file
-        if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
-            caption = generate_caption(file_path)
-            
-            # Create a .txt file with the same name as the image
-            base_name, _ = os.path.splitext(filename)
-            caption_file_path = os.path.join(folder_path, base_name + ".txt")
-
-            with open(caption_file_path, 'w', encoding='utf-8') as f:
-                f.write(caption)
-
-            print(f"Caption saved: {caption_file_path}")
-    
-    output_text = "Captions generated and saved for all images."
-    return output_text
-
-def dataset_preparation_tab():
-    # Tab layout for "Dataset Preparation"
-    with gr.Tab("Dataset Preparation"):
-
-        with gr.Group():
-            gr.Markdown("### ⬆️ Upload Pre-edited Image")
-            with gr.Row():
-                file_upload = gr.File(label="Upload Image", file_types=[".png", ".jpg", ".jpeg", ".webp"])
-                upload_status = gr.Textbox(label="Upload Status")
-        
-        with gr.Group():
-            gr.Markdown("### 👇 Select Image To Crop / Resize")
-            with gr.Row():
-                preedit_img_path = gr.Textbox(label="Select Image Path", placeholder="Path to pre-edited image", scale=4)
-                browse_preedit_img_btn = gr.Button("📁", variant="secondary", scale=1)
-            
-            gr.Markdown("### ✂️ Image Cropping Tool")
-            with gr.Row():
-                free_crop_btn = gr.Button("Crop Image Freely")            
-                crop_btn = gr.Button("Crop Image with Aspect")
-
-            gr.Markdown("### 🪟 Image Resizing Tool")  
-            with gr.Row():
-                width = gr.Number(label="Enter Width:")
-                height = gr.Number(label="Enter Height:")
-                resize_image_btn = gr.Button("Resize", variant="secondary")
-            with gr.Row():
-                ratio = gr.Number(label="Enter Ratio")
-                resize_image_ratio_btn = gr.Button("Resize while keeping aspect", variant="secondary")
-
-        with gr.Group():
-            gr.Markdown("### 📄 Auto-captioning Tool")
-            with gr.Row():
-                dataset_dir = gr.Textbox(label="Select Dataset Directory", placeholder="Path to dataset", scale=4)
-                dataset_dir_btn = gr.Button("📁", variant="secondary", scale=1)
-            caption_btn = gr.Button("Auto-captioning")
-
-        gr.Markdown("### ⌛ Your Current Status") 
-        output_text = gr.Textbox(label="Output Status")
-
-        dataset_dir_btn.click(fn=load_dataset_dir, inputs=[], outputs=dataset_dir)
-        browse_preedit_img_btn.click(fn=load_preedit_image, inputs=[], outputs=preedit_img_path)
-        free_crop_btn.click(fn=free_crop_image, inputs=[preedit_img_path], outputs=output_text)
-        crop_btn.click(fn=crop_image, inputs=[preedit_img_path], outputs=output_text)
-        file_upload.change(fn=save_uploaded_image, inputs=[file_upload], outputs=[upload_status])
-        resize_image_btn.click(fn=resize_image, inputs=[preedit_img_path, width, height], outputs=output_text)
-        resize_image_ratio_btn.click(fn=resize_image_by_ratio, inputs=[preedit_img_path, ratio], outputs=output_text)
-        caption_btn.click(fn=generate_captions_for_folder, inputs=dataset_dir, outputs=[])
+   

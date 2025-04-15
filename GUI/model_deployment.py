@@ -1,7 +1,9 @@
 import gradio as gr
 import torch
-import time
+import tkinter as tk
 import os
+from tkinter import filedialog
+
 from diffusers import (
     StableDiffusionPipeline,
     EulerAncestralDiscreteScheduler,
@@ -12,9 +14,6 @@ from diffusers import (
     LMSDiscreteScheduler,
     HeunDiscreteScheduler,
 )
-from safetensors.torch import load_file
-import tkinter as tk
-from tkinter import filedialog
 
 SCHEDULER_MAPPING = {
     "Euler A (euler_a)": EulerAncestralDiscreteScheduler,
@@ -25,7 +24,6 @@ SCHEDULER_MAPPING = {
     "LMS": LMSDiscreteScheduler,
     "Heun": HeunDiscreteScheduler,
 }
-
 
 def load_lora():
     default_dir = os.path.abspath("C:\lora-trainer\models\lora")
@@ -113,47 +111,4 @@ def generate_image(scheduler_name, lora_path, lora_scale, width, height,
 
     return images
 
-# Gradio tab for deployment
-def model_deployment_tab():
-    with gr.Tab("Model Deployment"):
-
-        prompt = gr.TextArea(label="Prompt", value="modelshoot style, serious expression, full face, handsome face, high detail, intricate, sharp focus, photorealistic, caucasian, middle-aged man, black shirt, black necktie")
-        negative_prompt = gr.TextArea(label="Negative Prompt", value="deformed, distorted, disfigures, blurry, low-res, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, mutated hands and fingers, disconeected limbs, mutation, mutated, ugly, disgusting, amputation")
-        
-        with gr.Group():
-            with gr.Row():
-                lora_path = gr.Textbox(label="LoRA Path", placeholder="Path to LoRA", scale=4)
-                browse_lora_btn = gr.Button("📁", variant="secondary", scale=1)    
-
-            lora_scale = gr.Number(label="Enter influence of LoRA onto the base model (0.0 - 1.0)")
-
-            with gr.Row():
-                width = gr.Number(label="Image Width:")
-                height = gr.Number(label="Image Height:")
-
-            with gr.Row():
-                scheduler_name = gr.Dropdown(
-                    label="Sampler (Scheduler)",
-                    choices=list(SCHEDULER_MAPPING.keys()),
-                    value="Euler A (euler_a)"
-                )
-
-            with gr.Row():
-                steps = gr.Slider(10, 100, value=50, step=1, label="Steps")
-                guidance = gr.Slider(1.0, 15.0, value=7.5, step=0.1, label="Guidance Scale")
-                seed = gr.Number(value=-1, label="Seed (-1 = random)")
-
-            with gr.Row():
-                batch_count = gr.Slider(1, 10, value=1, step=1, label="Batch Count")
-                batch_size = gr.Slider(1, 8, value=1, step=1, label="Batch Size")
-
-        generate_btn = gr.Button("Generate")
-        output_gallery = gr.Gallery(label="Generated Images")
-        browse_lora_btn.click(fn=load_lora, inputs=[], outputs=lora_path)
-        generate_btn.click(
-            fn=generate_image,
-            inputs=[scheduler_name, lora_path, lora_scale, width, height, 
-                    prompt, negative_prompt, steps, guidance, 
-                    seed, batch_count, batch_size],
-            outputs=output_gallery
-        )
+    
